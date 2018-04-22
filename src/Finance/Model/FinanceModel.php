@@ -4,7 +4,7 @@ namespace Finance\Model;
 
 use Core\Model\DefaultModel;
 use Company\Model\CompanyModel;
-use Carrier\Model\ShippingModel;
+use Sales\Model\ShippingModel;
 use Core\Model\ErrorModel;
 use Itaucripto\Itaucripto;
 use Core\Helper\Config;
