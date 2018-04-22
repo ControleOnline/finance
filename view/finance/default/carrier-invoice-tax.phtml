@@ -1,0 +1,10 @@
+<div id="invoice-tax" data-invoice-tax="<?= $this->carrier_invoice_tax ? $this->carrier_invoice_tax->getId() : '' ?>">           
+    <?php if ($this->carrier_invoice_tax && $this->carrier_invoice_tax->getInvoice()) { ?>        
+        <?php if ($this->carrier_invoice_tax_number) { ?>
+            <h5>
+                <?= $this->translate('Carrier invoice number') ?>: #<?= $this->carrier_invoice_tax_number ?>
+            </h5>
+        <?php } ?>        
+        <iframe src="/vendor/pdf.js/web/viewer.html?zoom=page-width&file=/sales/invoice-tax/id/<?= $this->carrier_invoice_tax->getId() ?>.pdf" class="pdf-container"></iframe>        
+    <?php } ?>            
+</div>

@@ -1,0 +1,63 @@
+<div class="row">
+    <div class="col-xs-12">
+        <div class="card">
+            <div class="panel-body">                                                
+                <legend><?= $this->translate('Pay invoices') ?></legend>
+
+                <div class="row">
+                    <form method="GET" action="/<?= $this->module_name ?>/pay">
+                        <div class="col-md-6">
+                        </div>                    
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="from-invoice-list"><?= $this->translate('Invoice status') ?>:</label>
+                                <select data-change-container="#invoice-list" class="form-control"  name="invoice-status">
+                                    <option value="0" <?= !$this->selectedStatus ? 'SELECTED' : '' ?>></option>
+                                    <?php foreach ($this->invoiceStatus as $invoiceStatus) { ?>
+                                        <option value="<?= $invoiceStatus->getId() ?>" <?= $this->selectedStatus == $invoiceStatus->getId() ? 'SELECTED' : '' ?>><?= $this->translate($invoiceStatus->getStatus()) ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <br><br>
+                <div id="invoice-list">
+                    <table data-table="invoice-list" class="datatable table table-striped primary" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th><?= $this->translate('ID') ?></th>
+                                <th><?= $this->translate('Orders') ?></th>
+                                <th><?= $this->translate('Due date') ?></th>                                
+                                <th><?= $this->translate('Provider') ?></th>
+                                <th><?= $this->translate('Status') ?></th>                                
+                                <th><?= $this->translate('Price') ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($this->payInvoice AS $invoices) { ?>   
+                                <tr class="<?= $invoices->getStatus() ? 'invoice-' . str_replace(' ', '-', strtolower($invoices->getStatus()->getStatus())) : '' ?>" id="people-<?= $invoices->getId() ?>">                                
+                                    <td><a href="/<?= $this->module_name ?>/pay/id/<?= $invoices->getId() ?>">#<?= $invoices->getId() ?></a></td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="dropbtn"><?= count($invoices->getOrder()) ?> <?= count($invoices->getOrder()) > 1 ? $this->translate('Orders') : $this->translate('Order') ?></button>
+                                            <div class="dropdown-content">
+                                                <?php foreach ($invoices->getOrder() as $order) { ?>                                            
+                                                    <a href="/purchasing/order/id/<?= $order->getOrder()->getId() ?>">#<?= $order->getOrder()->getId() ?></a> 
+                                                <?php } ?>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><?= $invoices->getAlterDate() ? $invoices->getDueDate()->format('d/m/Y') : '' ?></td>                                    
+                                    <td><?= count($invoices->getOrder()) > 0 && $invoices->getOrder()[0]->getOrder()->getProvider() ? $invoices->getOrder()[0]->getOrder()->getProvider()->getName() : '' ?></td>
+                                    <td class="<?= $invoices->getStatus() ? 'invoice-status-' . str_replace(' ', '-', strtolower($invoices->getStatus()->getStatus())) : '' ?>"><?= $invoices->getStatus() ? $this->translate($invoices->getStatus()->getStatus()) : '' ?></td>                                    
+                                    <td><?= $this->translate('corrency_symbol') . ' ' . number_format($invoices->getPrice(), 2, ',', '.') ?></td>                                
+                                </tr>
+                            <?php } ?>                            
+                        </tbody>
+                    </table>                   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

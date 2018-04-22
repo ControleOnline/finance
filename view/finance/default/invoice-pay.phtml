@@ -1,0 +1,123 @@
+<div class="row">    
+    <div class="col-xs-12">
+        <div class="card">
+            <div class="card hovercard">
+                <div class="card-background">                    
+                    <img class="profile-img card-bkimg lazy-load" src="<?= $this->order->getProvider() && $this->order->getProvider()->getImage() ? $this->order->getProvider()->getImage()->getUrl() : $this->default_company_logo ?>">                    
+                </div>
+                <div class="useravatar">                    
+                    <img src="<?= $this->order->getProvider() && $this->order->getProvider()->getImage() ? $this->order->getProvider()->getImage()->getUrl() : $this->default_company_logo ?>" class="">
+                </div>
+                <div class="card-info"> 
+                    <span class="card-title"><?= $this->order->getProvider() ? $this->order->getProvider()->getAlias() : '' ?></span>
+                </div>
+            </div>
+
+            <ul class="nav nav-tabs tab-stats">                      
+                <?php if ($this->purchasingOrders) { ?>   
+                    <?php $inactive = true; ?>
+                    <li role="purchasing-orders" class="active">
+                        <a href="#purchasing-orders" aria-controls="purchasing-orders" role="tab" data-toggle="tab" aria-expanded="true">
+                            <?= $this->translate('Purchasing Orders') ?> (<?= count($this->purchasingOrders) ?>)
+                        </a>
+                    </li>                                     
+                <?php } ?>
+                <?php if ($this->saleOrders) { ?>  
+                    <li role="sales-orders" class="<?= $inactive ? '' : 'active' ?>">
+                        <a href="#sales-orders" aria-controls="sales-orders" role="tab" data-toggle="tab" aria-expanded="true">
+                            <?= $this->translate('Sale orders') ?> (<?= count($this->saleOrders) ?>)
+                        </a>
+                    </li>                                     
+                <?php } ?>
+                <?php if ($this->userModel->getUserCompany() && $this->order->getClient() && $this->userModel->getUserCompany()->getId() == $this->order->getClient()->getId() && $this->invoice->getPaymentResponse()) { ?>
+                    <li role="proof-of-payment">
+                        <a href="#proof-of-payment" aria-controls="proof-of-payment" role="tab" data-toggle="tab" aria-expanded="true">
+                            <?= $this->translate('Proof of payment') ?>
+                        </a>
+                    </li>                                     
+                <?php } ?>
+
+            </ul>     
+            <div class="row row-order-main-header bg-<?= str_replace(' ', '-', $this->invoice->getStatus()->getRealStatus()) ?>">
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 order-left-header">
+
+                    <h5>
+                        <b><?= $this->translate('Invoice Number') ?></b>: <span class="pull-right">#<?= $this->invoice->getId() ?></span>
+                    </h5>                    
+                    <h5>
+                        <b><?= $this->translate('Total sales price') ?></b>: <span class="pull-right"><?= $this->translate('corrency_symbol') ?> <?= number_format($this->totalSalesOrders, 2, ',', '.') ?></span>
+                    </h5>                                                            
+                    <h5>
+                        <b><?= $this->translate('Invoice price') ?></b>: <span class="pull-right"><?= $this->translate('corrency_symbol') ?> <?= number_format($this->invoice->getPrice(), 2, ',', '.') ?></span>
+                    </h5>                                                            
+                    <h5>
+                        <b><?= $this->translate('Profit price') ?></b>: <span class="pull-right"><?= $this->translate('corrency_symbol') ?> <?= number_format(($this->totalSalesOrders - $this->invoice->getPrice()), 2, ',', '.') ?></span>
+                    </h5>                                                            
+                    <h5>
+                        <b><?= $this->translate('Average ticket') ?></b>: <span class="pull-right"><?= $this->translate('corrency_symbol') ?> <?= number_format((($this->totalSalesOrders - $this->invoice->getPrice() ) / count($this->saleOrders)), 2, ',', '.') ?></span>
+                    </h5>                                                                                
+                </div>
+                <div class="col-lg-9 col-md-9 col-sm-6 col-xs-12 order-right-header">
+                    <label class="control-label">
+                        <h4><?= $this->translate(str_replace(' ', '-', $this->invoice->getStatus()->getStatus()) . '-invoice-header') ?></h4>
+                        <h5><?= $this->translate(str_replace(' ', '-', $this->invoice->getStatus()->getStatus()) . '-invoice-subheader') ?></h4>
+                    </label>
+                    <div class="pull-right">
+                        <?php if ($this->defaultCompany && $this->userModel->getUserCompany() && $this->userModel->getUserCompany()->getId() === $this->defaultCompany->getId()) { ?>
+                            <?php if ($this->userModel->getUserCompany() && $this->order->getClient() && $this->userModel->getUserCompany()->getId() == $this->order->getClient()->getId() && $this->invoice->getPaymentResponse() && $this->invoice->getStatus()->getStatus() != 'paid') { ?>
+                                <h6>
+                                    <button                            
+                                        data-delete-name="<?= $this->translate('Payment made') ?>" 
+                                        data-calcel-name="<?= $this->translate('Cancel') ?>" 
+                                        data-header="<?= $this->translate('Approve this order?') ?>"
+                                        data-body="#<?= $this->invoice->getId() ?>"
+                                        data-toggle="modal"
+                                        data-target="#confirm-delete"
+                                        data-id="<?= $this->invoice->getId() ?>"
+                                        data-delete-confirm="/<?= $this->module_name ?>/payment-made.json"
+                                        data-success-url="/<?= $this->module_name ?>/pay/id/<?= $this->invoice->getId() ?>"  
+                                        id="order-status-<?= $this->invoice->getId() ?>"
+                                        name="payment-made" type="button" class="btn btn-primary"><?= $this->translate('Payment made') ?></button>
+                                </h6>
+                            <?php } ?>
+                            <?php if ($this->invoice->getStatus()->getStatus() != 'paid') { ?>                        
+                                <form enctype="multipart/form-data">                                                    
+                                    <span class="btn btn-success fileinput-button">
+                                        <i class="glyphicon glyphicon-plus"></i>
+                                        <span><?= $this->translate('Send proof of payment') ?></span>        
+                                        <input data-success-url="/<?= $this->module_name ?>/pay/id/<?= $this->invoice->getId() ?>" data-url="/<?= $this->module_name ?>/add-proof-of-payment/invoice/<?= $this->invoice->getId() ?>.json" data-progress-bar=".progress .progress-bar" accept=".jpg,.jpeg,.png" class="fileupload" id="add-proof-of-payment" type="file" name="proof-of-payment">
+                                    </span>
+                                    <div id="progress" class="progress">
+                                        <div class="progress-bar progress-bar-success"></div>
+                                    </div>
+                                </form>
+                            <?php } ?>                        
+                        <?php } ?>                        
+                    </div>
+                </div>
+            </div>
+            <div class="card-body tab-content">                                                                                                       
+                <?php if ($this->purchasingOrders) { ?>   
+                    <div role="tabpanel" class="tab-pane active" id="purchasing-orders">
+                        <?= $this->render("finance/default/purchasing-orders.phtml"); ?>
+                    </div>
+                <?php } ?>   
+                <?php if ($this->saleOrders) { ?>   
+                    <div role="tabpanel" class="tab-pane <?= $inactive ? '' : 'active' ?>" id="sales-orders">
+                        <?= $this->render("finance/default/sales-orders.phtml"); ?>
+                    </div>
+                <?php } ?>      
+                <?php if ($this->userModel->getUserCompany() && $this->order->getClient() && $this->userModel->getUserCompany()->getId() == $this->order->getClient()->getId() && $this->invoice->getPaymentResponse()) { ?>
+                    <div role="tabpanel" class="tab-pane" id="proof-of-payment">
+                        <center>
+                            <?php
+                            $finfo = new finfo(FILEINFO_MIME_TYPE);
+                            ?>
+                            <img src="data:<?= $finfo->buffer($this->invoice->getPaymentResponse()) ?>;base64,<?= base64_encode($this->invoice->getPaymentResponse()) ?>"/>
+                        </center>
+                    </div>
+                <?php } ?>      
+            </div>
+        </div>         
+    </div>
+</div>

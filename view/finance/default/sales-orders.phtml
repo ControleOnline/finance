@@ -1,0 +1,41 @@
+<div class="row">
+    <div class="panel-body">                                                
+        <legend><?= $this->translate('Sale orders') ?></legend>
+        <div id="order-list">
+            <table data-table="order-list" class="datatable table table-striped primary" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th><?= $this->translate('ID') ?></th>    
+                        <th><?= $this->translate('Alter Date') ?></th>
+                        <th><?= $this->translate('Status') ?></th>
+                        <th><?= $this->translate('Client') ?></th>
+                        <th><?= $this->translate('Retrieve client') ?></th>
+                        <th><?= $this->translate('Retrieve location') ?></th>
+                        <th><?= $this->translate('Delivery client') ?></th>
+                        <th><?= $this->translate('Delivery location') ?></th>
+                        <th><?= $this->translate('Carrier') ?></th>
+                        <th><?= $this->translate('Invoice') ?></th>                        
+                        <th><?= $this->translate('Price') ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($this->saleOrders AS $orders) { ?>   
+                        <tr class="<?= $orders->getStatus() ? 'order-' . str_replace(' ', '-', strtolower($orders->getStatus()->getStatus())) : '' ?>" id="people-<?= $orders->getId() ?>">
+                            <td><a href="/sales/order/id/<?= $orders->getId() ?>">#<?= $orders->getId() ?></a></td>   
+                            <td><?= $orders->getAlterDate() ? $orders->getAlterDate()->format('d/m/Y H:i:s') : '' ?></td>
+                            <td class="<?= $orders->getStatus() ? 'order-status-' . str_replace(' ', '-', strtolower($orders->getStatus()->getStatus())) : '' ?>"><?= $orders->getStatus() ? $this->translate($orders->getStatus()->getStatus()) : '' ?></td>
+                            <td><?= $orders->getClient() ? $orders->getClient()->getName() : '' ?></td>
+                            <td><?= $orders->getRetrievePeople() ? $orders->getRetrievePeople()->getName() : '' ?></td>
+                            <td><?= $orders->getQuote() && $orders->getQuote()->getCityOrigin() ? $orders->getQuote()->getCityOrigin()->getCity() . ' / ' . $orders->getQuote()->getCityOrigin()->getState()->getUf() : '' ?></td>
+                            <td><?= $orders->getDeliveryPeople() ? $orders->getDeliveryPeople()->getName() : '' ?></td>
+                            <td><?= $orders->getQuote() && $orders->getQuote()->getCityDestination() ? $orders->getQuote()->getCityDestination()->getCity() . ' / ' . $orders->getQuote()->getCityDestination()->getState()->getUf() : '' ?></td>
+                            <td><?= $orders->getQuote() ? $orders->getQuote()->getCarrier()->getName() : '' ?></td>
+                            <td><?= count($orders->getInvoiceTax()) > 0 ? $orders->getInvoiceTax()[0]->getInvoiceTax()->getInvoiceNumber() : '' ?></td>                                    
+                            <td><?= $this->translate('corrency_symbol') . ' ' . number_format($orders->getPrice(), 2, ',', '.') ?></td>                                
+                        </tr>
+                    <?php } ?>                            
+                </tbody>
+            </table>                   
+        </div>
+    </div>        
+</div>

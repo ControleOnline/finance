@@ -1,0 +1,91 @@
+<div class="row">    
+    <div class="col-xs-12">
+        <div class="card">
+            <div class="card hovercard">
+                <div class="card-background">                    
+                    <img class="profile-img card-bkimg lazy-load" src="<?= $this->order->getPayer() && $this->order->getPayer()->getImage() ? $this->order->getPayer()->getImage()->getUrl() : $this->default_company_logo ?>">                    
+                </div>
+                <div class="useravatar">                    
+                    <img src="<?= $this->order->getPayer() && $this->order->getPayer()->getImage() ? $this->order->getPayer()->getImage()->getUrl() : $this->default_company_logo ?>" class="">
+                </div>
+                <div class="card-info"> 
+                    <span class="card-title"><?= $this->order->getPayer() ? $this->order->getPayer()->getAlias() : '' ?></span>
+                </div>
+            </div>
+
+            <ul class="nav nav-tabs tab-stats">                      
+                <?php if ($this->saleOrders) { ?>  
+                    <?php $inactive = true; ?>
+                    <li role="sales-orders" class="active">
+                        <a href="#sales-orders" aria-controls="sales-orders" role="tab" data-toggle="tab" aria-expanded="true">
+                            <?= $this->translate('Sale orders') ?> (<?=count($this->saleOrders)?>)
+                        </a>
+                    </li>                                     
+                <?php } ?>
+                <?php if ($this->purchasingOrders) { ?>   
+                    <li role="purchasing-orders" class="<?= $inactive ? '' : 'active' ?>">
+                        <a href="#purchasing-orders" aria-controls="purchasing-orders" role="tab" data-toggle="tab" aria-expanded="true">
+                            <?= $this->translate('Purchasing Orders') ?> (<?=count($this->purchasingOrders)?>)
+                        </a>
+                    </li>                                     
+                <?php } ?>
+            </ul>     
+            <div class="row row-order-main-header bg-<?= str_replace(' ', '-', $this->invoice->getStatus()->getRealStatus()) ?>">
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 order-left-header">
+
+                    <h5>
+                        <b><?= $this->translate('Invoice Number') ?></b>: <span class="pull-right">#<?= $this->invoice->getId() ?></span>
+                    </h5>                    
+                    <h5>
+                        <b><?= $this->translate('Invoice price') ?></b>: <span class="pull-right"><?= $this->translate('corrency_symbol') ?> <?= number_format($this->invoice->getPrice(), 2, ',', '.') ?></span>
+                    </h5>                                        
+                    <h5>
+                        <b><?= $this->translate('Total purchasing price') ?></b>: <span class="pull-right"><?= $this->translate('corrency_symbol') ?> <?= number_format($this->totalPurchasingOrders, 2, ',', '.') ?></span>
+                    </h5>                                                            
+                    <h5>
+                        <b><?= $this->translate('Profit price') ?></b>: <span class="pull-right"><?= $this->translate('corrency_symbol') ?> <?= number_format(($this->invoice->getPrice() - $this->totalPurchasingOrders), 2, ',', '.') ?></span>
+                    </h5>                                                            
+                    <h5>
+                        <b><?= $this->translate('Average ticket') ?></b>: <span class="pull-right"><?= $this->translate('corrency_symbol') ?> <?= number_format((($this->invoice->getPrice() - $this->totalPurchasingOrders)/count($this->saleOrders)), 2, ',', '.') ?></span>
+                    </h5>                                                                                
+                </div>
+                <div class="col-lg-9 col-md-9 col-sm-6 col-xs-12 order-right-header">
+                    <label class="control-label">
+                        <h4><?= $this->translate(str_replace(' ', '-', $this->invoice->getStatus()->getStatus()) . '-invoice-header') ?></h4>
+                        <h5><?= $this->translate(str_replace(' ', '-', $this->invoice->getStatus()->getStatus()) . '-invoice-subheader') ?></h4>
+                    </label>
+                    <div class="pull-right">
+                        <?php if ($this->invoice->getStatus()->getStatus() == 'analysis' && $this->userModel->getUserCompany() && $this->order->getProvider() && $this->userModel->getUserCompany()->getId() == $this->order->getProvider()->getId()) { ?>
+                            <h6>
+                                <button                            
+                                    data-delete-name="<?= $this->translate('Approve order') ?>" 
+                                    data-calcel-name="<?= $this->translate('Cancel') ?>" 
+                                    data-header="<?= $this->translate('Approve this order?') ?>"
+                                    data-body="#<?= $this->order->getId() ?>"
+                                    data-toggle="modal"
+                                    data-target="#confirm-delete"                              
+                                    data-id="<?= $this->order->getId() ?>"
+                                    data-delete-confirm="/<?= $this->module_name ?>/approve-order.json"
+                                    data-success-url="/<?= $this->module_name ?>/order/id/<?= $this->order->getId() ?>"  
+                                    id="order-status-<?= $this->order->getId() ?>"
+                                    name="approve-order" type="button" class="btn btn-primary"><?= $this->translate('Approve order') ?></button>
+                            </h6>
+                        <?php } ?>                        
+                    </div>
+                </div>
+            </div>
+            <div class="card-body tab-content">                                                                                       
+                <?php if ($this->saleOrders) { ?>   
+                    <div role="tabpanel" class="tab-pane active" id="sales-orders">
+                        <?= $this->render("finance/default/sales-orders.phtml"); ?>
+                    </div>
+                <?php } ?>      
+                <?php if ($this->purchasingOrders) { ?>   
+                    <div role="tabpanel" class="tab-pane <?= $inactive ? '' : 'active' ?>" id="purchasing-orders">
+                        <?= $this->render("finance/default/purchasing-orders.phtml"); ?>
+                    </div>
+                <?php } ?>   
+            </div>
+        </div>         
+    </div>
+</div>

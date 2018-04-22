@@ -1,0 +1,21 @@
+{
+    "name": "controleonline/Finance",
+    "description": "Controle Online - Finance Module",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "Finance"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Finance\\": "src/Finance"
+        },
+        "classmap": [
+            "Module.php"
+        ]
+    },
+    "homepage": "https://github.com/ControleOnline/finance",
+    "require": {
+        "controleonline/core": "*",
+        "controleonline/user": "*"
+    }    
+}
